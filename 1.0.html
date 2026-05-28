@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酒馆决策台 - 点选项填入输入框</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: transparent;
+            padding: 12px;
+        }
+        .st-panel-container {
+            border: 2px solid #555;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            color: #000000;
+            font-family: sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #555;
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+        details {
+            margin-bottom: 12px;
+        }
+        summary {
+            font-weight: bold;
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            list-style: none;
+        }
+        .option-group {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-top: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .clickable-opt {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .clickable-opt:hover {
+            transform: translateX(5px);
+            border-color: #d4af37;
+            background: #f0f0f0;
+        }
+        .custom-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 4px;
+        }
+        .custom-row input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .custom-row button {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .custom-row button:hover {
+            background: #c9302c;
+        }
+        hr {
+            margin: 8px 0;
+            border-top: 1px dashed #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="st-panel-container" id="decisionPanel">
+    <h3>🎯 玩家行动决策台（点击选项→填输入框）</h3>
+
+    <!-- Q1 行动 -->
+    <details open>
+        <summary>▶ Q1: [AI生成：结合当前场景与【世界书设定的职务/身份关系】，提出一个行动应对问题？]</summary>
+        <div class="option-group">
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]</div>
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]</div>
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]</div>
+            <div class="custom-row">
+                <input type="text" id="q1_custom" placeholder="✍️ 自定义行动...">
+                <button data-type="custom" data-prefix="【我的行动】" data-target="q1_custom">填入</button>
+            </div>
+        </div>
+    </details>
+
+    <!-- Q2 对话 -->
+    <details open>
+        <summary>▶ Q2: [AI生成：针对NPC言论，并结合【世界书设定的职务/身份关系】，提出一个对话应对问题？]</summary>
+        <div class="option-group">
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]</div>
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]</div>
+            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]</div>
+            <div class="custom-row">
+                <input type="text" id="q2_custom" placeholder="💬 自定义对话...">
+                <button data-type="custom" data-prefix="【我的对话】" data-target="q2_custom">填入</button>
+            </div>
+        </div>
+    </details>
+
+    <!-- Q3 节奏 -->
+    <details open>
+        <summary>▶ Q3: 剧情长度与演进方式（单选·点即填）</summary>
+        <div class="option-group">
+            <div class="clickable-opt" data-val="生成不少于200字剧情">生成不少于200字剧情</div>
+            <div class="clickable-opt" data-val="生成不少于600字剧情">生成不少于600字剧情</div>
+            <div class="clickable-opt" data-val="生成不少于1200字剧情">生成不少于1200字剧情</div>
+            <div class="custom-row">
+                <input type="number" id="q3_custom" placeholder="自定义字数" style="width:130px">
+                <button data-type="custom" data-prefix="生成不少于" data-target="q3_custom" data-suffix="字剧情">填入</button>
+            </div>
+            <div class="clickable-opt" data-val="快速推进当前剧情至转场。请根据我上述勾选的行动与对话，结合前后文、世界书、角色关系（交情/性趣）来续写后续剧情直到转场。转场后必须注明过了多少时间，并全量同步状态栏中的时间线。">⏩ 快速推进至转场（综合所有设定）</div>
+        </div>
+    </details>
+
+    <!-- Q4 调查 & 日常 -->
+    <details open>
+        <summary>▶ Q4: 发起调查或日常行动</summary>
+        <div class="option-group">
+            <div class="clickable-opt" data-val="发起调查: [AI生成: 遍历到的NPC1名称]">🔍 发起调查: [AI生成: 遍历到的NPC1名称]</div>
+            <div class="clickable-opt" data-val="发起调查: 现场环境与异常">🔍 发起调查: 当前现场环境与异常线索</div>
+            <hr>
+            <div class="clickable-opt" data-val="在执行完上述行动后，发起睡觉休息">🛏️ 执行完上述选项后：发起睡觉休息</div>
+            <div class="clickable-opt" data-val="在执行完上述行动后，发起吃饭进食">🍲 执行完上述选项后：发起吃饭进食</div>
+        </div>
+    </details>
+</div>
+
+<script>
+    (function() {
+        // 获取酒馆输入框（兼容各种版本）
+        function getInputBox() {
+            return document.getElementById('send_textarea') ||
+                   document.querySelector('textarea[placeholder*="输入消息"], textarea[placeholder*="Type a message"], #compose-textarea');
+        }
+
+        // 填入文本（不自动发送）
+        function fillToInput(text) {
+            if (!text) return;
+            const ta = getInputBox();
+            if (ta) {
+                const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+                if (setter) setter.call(ta, text);
+                else ta.value = text;
+                ta.dispatchEvent(new Event('input', { bubbles: true }));
+                ta.focus();
+            } else {
+                // 降级复制
+                const fake = document.createElement('textarea');
+                fake.value = text;
+                document.body.appendChild(fake);
+                fake.select();
+                document.execCommand('copy');
+                document.body.removeChild(fake);
+                alert('未找到酒馆输入框，已将文本复制到剪贴板');
+            }
+        }
+
+        const panel = document.getElementById('decisionPanel');
+        if (!panel) return;
+
+        // 事件委托：点击带 data-val 的选项
+        panel.addEventListener('click', (e) => {
+            const opt = e.target.closest('.clickable-opt');
+            if (opt && opt.hasAttribute('data-val')) {
+                const val = opt.getAttribute('data-val');
+                if (val) fillToInput(val);
+                e.preventDefault();
+                return;
+            }
+
+            // 自定义按钮
+            const btn = e.target.closest('button');
+            if (btn && btn.getAttribute('data-type') === 'custom') {
+                const targetId = btn.getAttribute('data-target');
+                const inputEl = document.getElementById(targetId);
+                if (inputEl && inputEl.value.trim()) {
+                    let prefix = btn.getAttribute('data-prefix') || '';
+                    let suffix = btn.getAttribute('data-suffix') || '';
+                    let content = inputEl.value.trim();
+                    if (prefix) content = prefix + content;
+                    if (suffix) content = content + suffix;
+                    fillToInput(content);
+                    inputEl.value = '';
+                } else {
+                    alert('请先输入内容');
+                }
+                e.preventDefault();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
