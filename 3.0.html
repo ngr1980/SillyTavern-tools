@@ -239,6 +239,16 @@
         color: var(--accent-2);
       }
 
+      .empty-state {
+        text-align: center;
+        padding: 16px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        background: rgba(82, 135, 185, 0.08);
+        border-radius: 8px;
+        border: 1px dashed rgba(82, 135, 185, 0.3);
+      }
+
       .panel-footer {
         position: relative;
         z-index: 1;
@@ -290,6 +300,7 @@
           </header>
           <div class="options-body">
             <div class="options-grid" id="grid1"></div>
+            <div class="empty-state" id="empty1" style="display:none;">暂无选项</div>
           </div>
           <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
         </div>
@@ -308,6 +319,7 @@
           </header>
           <div class="options-body">
             <div class="options-grid" id="grid2"></div>
+            <div class="empty-state" id="empty2" style="display:none;">暂无选项</div>
           </div>
           <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
         </div>
@@ -326,6 +338,7 @@
           </header>
           <div class="options-body">
             <div class="options-grid" id="grid3"></div>
+            <div class="empty-state" id="empty3" style="display:none;">暂无选项</div>
           </div>
           <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
         </div>
@@ -344,6 +357,7 @@
           </header>
           <div class="options-body">
             <div class="options-grid" id="grid4"></div>
+            <div class="empty-state" id="empty4" style="display:none;">暂无选项</div>
           </div>
           <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
         </div>
@@ -352,10 +366,18 @@
 
     <script>
       // ---------- 工具函数 ----------
-      function renderOptions(gridId, options) {
+      function renderOptions(gridId, emptyId, options) {
         const grid = document.getElementById(gridId);
+        const empty = document.getElementById(emptyId);
         if (!grid || !Array.isArray(options)) return;
         grid.innerHTML = '';
+        if (options.length === 0) {
+          grid.style.display = 'none';
+          if (empty) empty.style.display = 'block';
+          return;
+        }
+        grid.style.display = '';
+        if (empty) empty.style.display = 'none';
         options.forEach((option, index) => {
           const card = document.createElement('button');
           card.type = 'button';
@@ -399,54 +421,50 @@
         if (saved === 'true') folder.classList.add('collapsed');
       });
 
-      // ---------- 从消息中提取多个 <options> 块 ----------
-      function parseAllOptions(messageText) {
-        const optionsRegex = /<options>([\s\S]*?)<\/options>/g;
-        const blocks = [];
+      // ---------- 从消息中提取标题和选项块 ----------
+      function extractPanelsData(messageText) {
+        const panels = [];
+        const regex = /<options>([\s\S]*?)<\/options>/g;
+        let lastIndex = 0;
         let match;
-        while ((match = optionsRegex.exec(messageText)) !== null) {
-          blocks.push(match[1].trim());
-        }
-        return blocks;
-      }
-
-      // 尝试提取标题（# Qx: ... 或简单的 Qx: 开头行）
-      function extractTitles(messageText) {
-        const titles = [];
-        // 匹配每个 <options> 前面最近的一行非空文本作为标题
-        const parts = messageText.split(/(<options>[\s\S]*?<\/options>)/g);
-        let lastText = '';
-        for (const part of parts) {
-          if (part.startsWith('<options>')) {
-            // 上一个文本块的最后一行作为标题
-            const lines = lastText.trim().split('\n');
-            const candidate = lines[lines.length - 1]?.trim();
-            if (candidate && /^#?\s*Q\d/.test(candidate)) {
-              titles.push(candidate.replace(/^#+\s*/, ''));
-            } else {
-              titles.push(null);
+        let index = 0;
+        while ((match = regex.exec(messageText)) !== null && index < 4) {
+          // 获取这个 <options> 之前的文本
+          const before = messageText.slice(lastIndex, match.index);
+          // 提取标题：取之前文本的最后一非空行，且包含 Q 开头
+          const lines = before.split('\n').filter(line => line.trim() !== '');
+          let title = '';
+          for (let i = lines.length - 1; i >= 0; i--) {
+            const line = lines[i].trim();
+            if (/^#?\s*Q\d/.test(line)) {
+              title = line.replace(/^#+\s*/, '').trim();
+              break;
             }
-            lastText = '';
-          } else {
-            lastText += part;
           }
+          if (!title) {
+            title = `Q${index + 1}`;
+          }
+          const options = match[1].split('|').map(s => s.trim()).filter(s => s.length > 0);
+          panels.push({ title, options });
+          lastIndex = regex.lastIndex;
+          index++;
         }
-        return titles;
+        // 如果不足4个面板，用空占位
+        while (panels.length < 4) {
+          panels.push({ title: `Q${panels.length + 1}`, options: [] });
+        }
+        return panels;
       }
 
       // 主逻辑
       const chat_message = getChatMessages(getCurrentMessageId())[0];
       const message = chat_message?.message || '';
-      const optionsBlocks = parseAllOptions(message);
-      const titles = extractTitles(message);
+      const panelsData = extractPanelsData(message);
 
-      const panelCount = 4;
-      for (let i = 1; i <= panelCount; i++) {
-        const block = optionsBlocks[i - 1] || '';
-        const title = titles[i - 1] || `Q${i}`;
-        document.getElementById(`q${i}-title`).textContent = title;
-        const options = block.split('|').map(s => s.trim()).filter(s => s.length > 0);
-        renderOptions(`grid${i}`, options);
+      for (let i = 1; i <= 4; i++) {
+        const panel = panelsData[i - 1];
+        document.getElementById(`q${i}-title`).textContent = panel.title;
+        renderOptions(`grid${i}`, `empty${i}`, panel.options);
       }
     </script>
   </body>
