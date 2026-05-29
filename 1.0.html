@@ -1,221 +1,453 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>酒馆决策台 - 点选项填入输入框</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>选项 · 追加模式</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      :root {
+        --paper-bg: #eef4fb;
+        --card-bg: #f7fbff;
+        --text-main: #1b2a38;
+        --text-muted: #5a6a79;
+        --border-color: #c7d6e6;
+        --shadow-color: rgba(20, 38, 58, 0.18);
+        --accent: #4b89c4;
+        --accent-2: #6fb1c7;
+        --spine: rgba(91, 128, 168, 0.16);
+        --staple: #97a6b6;
+        --grid-line: rgba(156, 185, 215, 0.18);
+        --chip-bg: rgba(82, 135, 185, 0.14);
+        --meta-bg: rgba(82, 135, 185, 0.18);
+      }
+
+      [data-theme='dark'] {
+        --paper-bg: #121b26;
+        --card-bg: #1c2632;
+        --text-main: #c9d4e0;
+        --text-muted: #97a7b8;
+        --border-color: rgba(92, 127, 164, 0.45);
+        --shadow-color: rgba(0, 0, 0, 0.55);
+        --accent: #6aa6e3;
+        --accent-2: #7fc6da;
+        --spine: rgba(96, 135, 175, 0.2);
+        --staple: #5c6d7d;
+        --grid-line: rgba(70, 100, 130, 0.25);
+        --chip-bg: rgba(82, 135, 185, 0.22);
+        --meta-bg: rgba(90, 135, 185, 0.32);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'STSong', 'Songti SC', 'SimSun', serif;
+        background: transparent;
+        color: var(--text-main);
+        padding: 10px;
+        line-height: 1.4;
+      }
+
+      .panels-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .options-panel {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 16px 36px var(--shadow-color);
+      }
+
+      .folder-shell {
+        position: relative;
+        padding: 12px 14px 12px 50px;
+        border-radius: 18px;
+        border: 1px solid var(--border-color);
+        background-color: var(--paper-bg);
+        background-image:
+          linear-gradient(transparent 21px, var(--grid-line) 22px),
+          linear-gradient(90deg, transparent 21px, var(--grid-line) 22px);
+        background-size: 22px 22px;
+        transition: all 0.3s ease;
+      }
+
+      .folder-shell::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        background: linear-gradient(180deg, var(--spine), transparent 60%);
+        border-right: 1px solid var(--border-color);
+      }
+
+      .folder-shell::after {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 28px;
+        width: 10px;
+        height: 10px;
+        border: 2px solid var(--staple);
+        border-radius: 50%;
+        box-shadow:
+          0 90px 0 0 var(--staple),
+          0 180px 0 0 var(--staple);
+        opacity: 0.8;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px dashed var(--border-color);
+        position: relative;
+        z-index: 1;
+      }
+
+      .title-main {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: none; /* 不再显示“行动选项” */
+      }
+
+      .title-meta {
+        font-size: 0.74rem;
+        padding: 2px 7px;
+        background: var(--meta-bg);
+        border-radius: 999px;
+        color: var(--text-main);
+        max-width: 70%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .ctrl-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: var(--text-main);
+        font-size: 0.9rem;
+      }
+
+      .ctrl-btn:hover {
+        transform: scale(1.05);
+        background: var(--chip-bg);
+      }
+
+      .collapse-arrow {
+        transition: transform 0.3s ease;
+        font-size: 0.7rem;
+      }
+
+      .folder-shell.collapsed .collapse-arrow {
+        transform: rotate(180deg);
+      }
+
+      .options-body {
+        position: relative;
+        z-index: 1;
+        padding: 10px 6px 2px;
+        max-height: 1200px;
+        opacity: 1;
+        overflow: hidden;
+        transition:
+          max-height 0.35s ease,
+          opacity 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .folder-shell.collapsed .options-body {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr;
+        gap: 8px;
+      }
+
+      .option-card {
+        position: relative;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        border-radius: 16px 12px 18px 14px;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-align: left;
+        box-shadow: 0 8px 16px var(--shadow-color);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .option-card:nth-child(odd) {
+        transform: translateX(6px);
+      }
+
+      .option-card:hover {
+        transform: translateX(10px);
+        border-color: var(--accent);
+        box-shadow: 0 12px 18px var(--shadow-color);
+      }
+
+      .option-card:active {
+        transform: translateX(7px);
+      }
+
+      .option-index {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+      }
+
+      .option-text {
+        flex: 1;
+        font-size: 0.84rem;
+        color: var(--text-main);
+      }
+
+      .option-tail {
+        font-size: 0.8rem;
+        color: var(--accent-2);
+      }
+
+      .panel-footer {
+        position: relative;
+        z-index: 1;
+        margin: 6px 6px 2px;
+        padding: 6px 8px;
+        border-top: 1px dashed var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        background: linear-gradient(90deg, rgba(82, 135, 185, 0.12), transparent 70%);
+        border-radius: 10px;
+      }
+
+      @media (max-width: 640px) {
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background: transparent;
-            padding: 12px;
+          padding: 6px;
         }
-        .st-panel-container {
-            border: 2px solid #555;
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 12px;
-            color: #000000;
-            font-family: sans-serif;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+        .folder-shell {
+          padding: 10px 10px 10px 40px;
         }
-        h3 {
-            margin-top: 0;
-            border-bottom: 2px solid #555;
-            padding-bottom: 5px;
-            font-size: 18px;
+
+        .panel-header {
+          flex-direction: column;
+          align-items: stretch;
         }
-        details {
-            margin-bottom: 12px;
+
+        .options-grid {
+          grid-template-columns: 1fr;
         }
-        summary {
-            font-weight: bold;
-            background: #f0f0f0;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            list-style: none;
+
+        .option-card:nth-child(odd) {
+          transform: translateX(0);
         }
-        .option-group {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-top: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .clickable-opt {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .clickable-opt:hover {
-            transform: translateX(5px);
-            border-color: #d4af37;
-            background: #f0f0f0;
-        }
-        .custom-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 4px;
-        }
-        .custom-row input {
-            flex: 1;
-            padding: 6px 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-        .custom-row button {
-            background: #d9534f;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .custom-row button:hover {
-            background: #c9302c;
-        }
-        hr {
-            margin: 8px 0;
-            border-top: 1px dashed #ccc;
-        }
+      }
     </style>
-</head>
-<body>
-<div class="st-panel-container" id="decisionPanel">
-    <h3>🎯 玩家行动决策台（点击选项→填输入框）</h3>
-
-    <!-- Q1 行动 -->
-    <details open>
-        <summary>▶ Q1: [AI生成：结合当前场景与【世界书设定的职务/身份关系】，提出一个行动应对问题？]</summary>
-        <div class="option-group">
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]</div>
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]</div>
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]</div>
-            <div class="custom-row">
-                <input type="text" id="q1_custom" placeholder="✍️ 自定义行动...">
-                <button data-type="custom" data-prefix="【我的行动】" data-target="q1_custom">填入</button>
+  </head>
+  <body>
+    <div class="panels-container">
+      <!-- 面板 1：Q1 行动 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder1">
+          <header class="panel-header">
+            <div class="title-main"></div>
+            <span class="title-meta">Q1: [AI生成：结合当前场景与【世界书设定的职务/身份关系】，提出一个行动应对问题？]</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder1">
+                <span class="collapse-arrow">▲</span>
+              </button>
             </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid1"></div>
+          </div>
+          <footer class="panel-footer">点击选项会将内容添加到当前输入框末尾，可连续附加多个选项。</footer>
         </div>
-    </details>
+      </div>
 
-    <!-- Q2 对话 -->
-    <details open>
-        <summary>▶ Q2: [AI生成：针对NPC言论，并结合【世界书设定的职务/身份关系】，提出一个对话应对问题？]</summary>
-        <div class="option-group">
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]</div>
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]</div>
-            <div class="clickable-opt" data-val="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]</div>
-            <div class="custom-row">
-                <input type="text" id="q2_custom" placeholder="💬 自定义对话...">
-                <button data-type="custom" data-prefix="【我的对话】" data-target="q2_custom">填入</button>
+      <!-- 面板 2：Q2 对话 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder2">
+          <header class="panel-header">
+            <div class="title-main"></div>
+            <span class="title-meta">Q2: [AI生成：针对NPC言论，并结合【世界书设定的职务/身份关系】，提出一个对话应对问题？]</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder2">
+                <span class="collapse-arrow">▲</span>
+              </button>
             </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid2"></div>
+          </div>
+          <footer class="panel-footer">点击选项会将内容添加到当前输入框末尾，可连续附加多个选项。</footer>
         </div>
-    </details>
+      </div>
 
-    <!-- Q3 节奏 -->
-    <details open>
-        <summary>▶ Q3: 剧情长度与演进方式（单选·点即填）</summary>
-        <div class="option-group">
-            <div class="clickable-opt" data-val="生成不少于200字剧情">生成不少于200字剧情</div>
-            <div class="clickable-opt" data-val="生成不少于600字剧情">生成不少于600字剧情</div>
-            <div class="clickable-opt" data-val="生成不少于1200字剧情">生成不少于1200字剧情</div>
-            <div class="custom-row">
-                <input type="number" id="q3_custom" placeholder="自定义字数" style="width:130px">
-                <button data-type="custom" data-prefix="生成不少于" data-target="q3_custom" data-suffix="字剧情">填入</button>
+      <!-- 面板 3：Q3 节奏 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder3">
+          <header class="panel-header">
+            <div class="title-main"></div>
+            <span class="title-meta">Q3: 剧情长度与演进方式（单选）</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder3">
+                <span class="collapse-arrow">▲</span>
+              </button>
             </div>
-            <div class="clickable-opt" data-val="快速推进当前剧情至转场。请根据我上述勾选的行动与对话，结合前后文、世界书、角色关系（交情/性趣）来续写后续剧情直到转场。转场后必须注明过了多少时间，并全量同步状态栏中的时间线。">⏩ 快速推进至转场（综合所有设定）</div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid3"></div>
+          </div>
+          <footer class="panel-footer">点击选项会将内容添加到当前输入框末尾，可连续附加多个选项。</footer>
         </div>
-    </details>
+      </div>
 
-    <!-- Q4 调查 & 日常 -->
-    <details open>
-        <summary>▶ Q4: 发起调查或日常行动</summary>
-        <div class="option-group">
-            <div class="clickable-opt" data-val="发起调查: [AI生成: 遍历到的NPC1名称]">🔍 发起调查: [AI生成: 遍历到的NPC1名称]</div>
-            <div class="clickable-opt" data-val="发起调查: 现场环境与异常">🔍 发起调查: 当前现场环境与异常线索</div>
-            <hr>
-            <div class="clickable-opt" data-val="在执行完上述行动后，发起睡觉休息">🛏️ 执行完上述选项后：发起睡觉休息</div>
-            <div class="clickable-opt" data-val="在执行完上述行动后，发起吃饭进食">🍲 执行完上述选项后：发起吃饭进食</div>
+      <!-- 面板 4：Q4 调查与休息 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder4">
+          <header class="panel-header">
+            <div class="title-main"></div>
+            <span class="title-meta">Q4: 发起调查或日常行动（可多选）</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder4">
+                <span class="collapse-arrow">▲</span>
+              </button>
+            </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid4"></div>
+          </div>
+          <footer class="panel-footer">点击选项会将内容添加到当前输入框末尾，可连续附加多个选项。</footer>
         </div>
-    </details>
-</div>
+      </div>
+    </div>
 
-<script>
-    (function() {
-        // 获取酒馆输入框（兼容各种版本）
-        function getInputBox() {
-            return document.getElementById('send_textarea') ||
-                   document.querySelector('textarea[placeholder*="输入消息"], textarea[placeholder*="Type a message"], #compose-textarea');
-        }
+    <script>
+      // ---------- 选项数据（按 Q1 - Q4 静态定义） ----------
+      const Q1_OPTIONS = [
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]',
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]',
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]'
+      ];
 
-        // 填入文本（不自动发送）
-        function fillToInput(text) {
-            if (!text) return;
-            const ta = getInputBox();
-            if (ta) {
-                const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-                if (setter) setter.call(ta, text);
-                else ta.value = text;
-                ta.dispatchEvent(new Event('input', { bubbles: true }));
-                ta.focus();
-            } else {
-                // 降级复制
-                const fake = document.createElement('textarea');
-                fake.value = text;
-                document.body.appendChild(fake);
-                fake.select();
-                document.execCommand('copy');
-                document.body.removeChild(fake);
-                alert('未找到酒馆输入框，已将文本复制到剪贴板');
-            }
-        }
+      const Q2_OPTIONS = [
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]',
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]',
+        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]'
+      ];
 
-        const panel = document.getElementById('decisionPanel');
-        if (!panel) return;
+      const Q3_OPTIONS = [
+        '生成不少于200字剧情',
+        '生成不少于600字剧情',
+        '生成不少于1200字剧情',
+        '快速推进当前剧情至转场。请根据我上述勾选的行动与对话，结合前后文、世界书、角色关系（交情/性趣）来续写后续剧情直到转场。转场后必须注明过了多少时间，并全量同步状态栏中的时间线。'
+      ];
 
-        // 事件委托：点击带 data-val 的选项
-        panel.addEventListener('click', (e) => {
-            const opt = e.target.closest('.clickable-opt');
-            if (opt && opt.hasAttribute('data-val')) {
-                const val = opt.getAttribute('data-val');
-                if (val) fillToInput(val);
-                e.preventDefault();
-                return;
-            }
+      const Q4_OPTIONS = [
+        '发起调查: [AI生成: 遍历到的NPC1名称]',
+        '发起调查: 现场环境与异常',
+        '在执行完上述行动后，发起睡觉休息',
+        '在执行完上述行动后，发起吃饭进食'
+      ];
 
-            // 自定义按钮
-            const btn = e.target.closest('button');
-            if (btn && btn.getAttribute('data-type') === 'custom') {
-                const targetId = btn.getAttribute('data-target');
-                const inputEl = document.getElementById(targetId);
-                if (inputEl && inputEl.value.trim()) {
-                    let prefix = btn.getAttribute('data-prefix') || '';
-                    let suffix = btn.getAttribute('data-suffix') || '';
-                    let content = inputEl.value.trim();
-                    if (prefix) content = prefix + content;
-                    if (suffix) content = content + suffix;
-                    fillToInput(content);
-                    inputEl.value = '';
-                } else {
-                    alert('请先输入内容');
-                }
-                e.preventDefault();
-            }
+      // ---------- 渲染函数 ----------
+      function renderOptions(containerId, options) {
+        const grid = document.getElementById(containerId);
+        if (!grid) return;
+        grid.innerHTML = '';
+        options.forEach((option, index) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'option-card';
+          card.innerHTML = `
+            <span class="option-index">#${index + 1}</span>
+            <span class="option-text"></span>
+            <span class="option-tail">↗</span>
+          `;
+          card.querySelector('.option-text').textContent = option;
+          card.addEventListener('click', () => handleOption(option));
+          grid.appendChild(card);
         });
-    })();
-</script>
-</body>
+      }
+
+      // ---------- 追加模式逻辑 ----------
+      function handleOption(text) {
+        const parent$ = window.parent && window.parent.$ ? window.parent.$ : null;
+        const currentInput = parent$ ? parent$('#send_textarea').val() : '';
+        const base = typeof currentInput === 'string' ? currentInput : '';
+        const newInput = base ? `${base}\n${text}` : text;
+
+        if (typeof triggerSlash === 'function') {
+          triggerSlash(`/setinput ${newInput}`);
+        }
+      }
+
+      // ---------- 折叠按钮 ----------
+      document.querySelectorAll('.collapse-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const folder = document.getElementById(targetId);
+          if (folder) {
+            folder.classList.toggle('collapsed');
+            // 可选：保存折叠状态到 localStorage
+            localStorage.setItem(`mushang-collapse-${targetId}`, folder.classList.contains('collapsed'));
+          }
+        });
+      });
+
+      // 恢复折叠状态
+      document.querySelectorAll('.folder-shell').forEach(folder => {
+        const id = folder.id;
+        const saved = localStorage.getItem(`mushang-collapse-${id}`);
+        if (saved === 'true') {
+          folder.classList.add('collapsed');
+        }
+      });
+
+      // ---------- 初始渲染 ----------
+      renderOptions('grid1', Q1_OPTIONS);
+      renderOptions('grid2', Q2_OPTIONS);
+      renderOptions('grid3', Q3_OPTIONS);
+      renderOptions('grid4', Q4_OPTIONS);
+    </script>
+  </body>
 </html>
