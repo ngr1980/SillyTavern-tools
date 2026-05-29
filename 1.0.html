@@ -115,13 +115,6 @@
         z-index: 1;
       }
 
-      .title-main {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--text-main);
-        display: none; /* 不再显示“行动选项” */
-      }
-
       .title-meta {
         font-size: 0.74rem;
         padding: 2px 7px;
@@ -284,12 +277,11 @@
   </head>
   <body>
     <div class="panels-container">
-      <!-- 面板 1：Q1 行动 -->
+      <!-- 面板 1 -->
       <div class="options-panel" data-theme="light">
         <div class="folder-shell" id="folder1">
           <header class="panel-header">
-            <div class="title-main"></div>
-            <span class="title-meta">Q1: [AI生成：结合当前场景与【世界书设定的职务/身份关系】，提出一个行动应对问题？]</span>
+            <span class="title-meta" id="q1-title"></span>
             <div class="header-actions">
               <button type="button" class="ctrl-btn collapse-btn" data-target="folder1">
                 <span class="collapse-arrow">▲</span>
@@ -303,12 +295,11 @@
         </div>
       </div>
 
-      <!-- 面板 2：Q2 对话 -->
+      <!-- 面板 2 -->
       <div class="options-panel" data-theme="light">
         <div class="folder-shell" id="folder2">
           <header class="panel-header">
-            <div class="title-main"></div>
-            <span class="title-meta">Q2: [AI生成：针对NPC言论，并结合【世界书设定的职务/身份关系】，提出一个对话应对问题？]</span>
+            <span class="title-meta" id="q2-title"></span>
             <div class="header-actions">
               <button type="button" class="ctrl-btn collapse-btn" data-target="folder2">
                 <span class="collapse-arrow">▲</span>
@@ -322,12 +313,11 @@
         </div>
       </div>
 
-      <!-- 面板 3：Q3 节奏 -->
+      <!-- 面板 3 -->
       <div class="options-panel" data-theme="light">
         <div class="folder-shell" id="folder3">
           <header class="panel-header">
-            <div class="title-main"></div>
-            <span class="title-meta">Q3: 剧情长度与演进方式（单选）</span>
+            <span class="title-meta" id="q3-title"></span>
             <div class="header-actions">
               <button type="button" class="ctrl-btn collapse-btn" data-target="folder3">
                 <span class="collapse-arrow">▲</span>
@@ -341,12 +331,11 @@
         </div>
       </div>
 
-      <!-- 面板 4：Q4 调查与休息 -->
+      <!-- 面板 4 -->
       <div class="options-panel" data-theme="light">
         <div class="folder-shell" id="folder4">
           <header class="panel-header">
-            <div class="title-main"></div>
-            <span class="title-meta">Q4: 发起调查或日常行动（可多选）</span>
+            <span class="title-meta" id="q4-title"></span>
             <div class="header-actions">
               <button type="button" class="ctrl-btn collapse-btn" data-target="folder4">
                 <span class="collapse-arrow">▲</span>
@@ -362,37 +351,10 @@
     </div>
 
     <script>
-      // ---------- 选项数据（按 Q1 - Q4 静态定义） ----------
-      const Q1_OPTIONS = [
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]',
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]',
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]'
-      ];
-
-      const Q2_OPTIONS = [
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]',
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]',
-        '[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]'
-      ];
-
-      const Q3_OPTIONS = [
-        '生成不少于200字剧情',
-        '生成不少于600字剧情',
-        '生成不少于1200字剧情',
-        '快速推进当前剧情至转场。请根据我上述勾选的行动与对话，结合前后文、世界书、角色关系（交情/性趣）来续写后续剧情直到转场。转场后必须注明过了多少时间，并全量同步状态栏中的时间线。'
-      ];
-
-      const Q4_OPTIONS = [
-        '发起调查: [AI生成: 遍历到的NPC1名称]',
-        '发起调查: 现场环境与异常',
-        '在执行完上述行动后，发起睡觉休息',
-        '在执行完上述行动后，发起吃饭进食'
-      ];
-
-      // ---------- 渲染函数 ----------
-      function renderOptions(containerId, options) {
-        const grid = document.getElementById(containerId);
-        if (!grid) return;
+      // ---------- 工具函数：填充选项到指定面板 ----------
+      function renderOptions(gridId, options) {
+        const grid = document.getElementById(gridId);
+        if (!grid || !Array.isArray(options)) return;
         grid.innerHTML = '';
         options.forEach((option, index) => {
           const card = document.createElement('button');
@@ -409,7 +371,7 @@
         });
       }
 
-      // ---------- 追加模式逻辑 ----------
+      // ---------- 追加模式：将选中的文本附加到父窗口输入框 ----------
       function handleOption(text) {
         const parent$ = window.parent && window.parent.$ ? window.parent.$ : null;
         const currentInput = parent$ ? parent$('#send_textarea').val() : '';
@@ -428,7 +390,6 @@
           const folder = document.getElementById(targetId);
           if (folder) {
             folder.classList.toggle('collapsed');
-            // 可选：保存折叠状态到 localStorage
             localStorage.setItem(`mushang-collapse-${targetId}`, folder.classList.contains('collapsed'));
           }
         });
@@ -443,11 +404,20 @@
         }
       });
 
-      // ---------- 初始渲染 ----------
-      renderOptions('grid1', Q1_OPTIONS);
-      renderOptions('grid2', Q2_OPTIONS);
-      renderOptions('grid3', Q3_OPTIONS);
-      renderOptions('grid4', Q4_OPTIONS);
+      /*
+       * ============================================================
+       *  AI 动态填充示例（实际使用时请删除以下注释，并替换为真实数据）：
+       *
+       *  // 设置面板标题
+       *  document.getElementById('q1-title').textContent = 'Q1: 你的行动问题？';
+       *  // 渲染选项
+       *  renderOptions('grid1', ['选项A', '选项B', '选项C']);
+       *
+       *  document.getElementById('q2-title').textContent = 'Q2: 你的对话问题？';
+       *  renderOptions('grid2', ['对话选项1', '对话选项2']);
+       *  ...
+       * ============================================================
+       */
     </script>
   </body>
 </html>
