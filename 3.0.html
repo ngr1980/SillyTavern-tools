@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>选项 · 四面板追加</title>
+    <style>
+      :root {
+        --paper-bg: #eef4fb;
+        --card-bg: #f7fbff;
+        --text-main: #1b2a38;
+        --text-muted: #5a6a79;
+        --border-color: #c7d6e6;
+        --shadow-color: rgba(20, 38, 58, 0.18);
+        --accent: #4b89c4;
+        --accent-2: #6fb1c7;
+        --spine: rgba(91, 128, 168, 0.16);
+        --staple: #97a6b6;
+        --grid-line: rgba(156, 185, 215, 0.18);
+        --chip-bg: rgba(82, 135, 185, 0.14);
+        --meta-bg: rgba(82, 135, 185, 0.18);
+      }
+
+      [data-theme='dark'] {
+        --paper-bg: #121b26;
+        --card-bg: #1c2632;
+        --text-main: #c9d4e0;
+        --text-muted: #97a7b8;
+        --border-color: rgba(92, 127, 164, 0.45);
+        --shadow-color: rgba(0, 0, 0, 0.55);
+        --accent: #6aa6e3;
+        --accent-2: #7fc6da;
+        --spine: rgba(96, 135, 175, 0.2);
+        --staple: #5c6d7d;
+        --grid-line: rgba(70, 100, 130, 0.25);
+        --chip-bg: rgba(82, 135, 185, 0.22);
+        --meta-bg: rgba(90, 135, 185, 0.32);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'STSong', 'Songti SC', 'SimSun', serif;
+        background: transparent;
+        color: var(--text-main);
+        padding: 10px;
+        line-height: 1.4;
+      }
+
+      .panels-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .options-panel {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 16px 36px var(--shadow-color);
+      }
+
+      .folder-shell {
+        position: relative;
+        padding: 12px 14px 12px 50px;
+        border-radius: 18px;
+        border: 1px solid var(--border-color);
+        background-color: var(--paper-bg);
+        background-image:
+          linear-gradient(transparent 21px, var(--grid-line) 22px),
+          linear-gradient(90deg, transparent 21px, var(--grid-line) 22px);
+        background-size: 22px 22px;
+        transition: all 0.3s ease;
+      }
+
+      .folder-shell::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        background: linear-gradient(180deg, var(--spine), transparent 60%);
+        border-right: 1px solid var(--border-color);
+      }
+
+      .folder-shell::after {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 28px;
+        width: 10px;
+        height: 10px;
+        border: 2px solid var(--staple);
+        border-radius: 50%;
+        box-shadow:
+          0 90px 0 0 var(--staple),
+          0 180px 0 0 var(--staple);
+        opacity: 0.8;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px dashed var(--border-color);
+        position: relative;
+        z-index: 1;
+      }
+
+      .title-meta {
+        font-size: 0.74rem;
+        padding: 2px 7px;
+        background: var(--meta-bg);
+        border-radius: 999px;
+        color: var(--text-main);
+        max-width: 75%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .ctrl-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: var(--text-main);
+        font-size: 0.9rem;
+      }
+
+      .ctrl-btn:hover {
+        transform: scale(1.05);
+        background: var(--chip-bg);
+      }
+
+      .collapse-arrow {
+        transition: transform 0.3s ease;
+        font-size: 0.7rem;
+      }
+
+      .folder-shell.collapsed .collapse-arrow {
+        transform: rotate(180deg);
+      }
+
+      .options-body {
+        position: relative;
+        z-index: 1;
+        padding: 10px 6px 2px;
+        max-height: 1200px;
+        opacity: 1;
+        overflow: hidden;
+        transition:
+          max-height 0.35s ease,
+          opacity 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .folder-shell.collapsed .options-body {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr;
+        gap: 8px;
+      }
+
+      .option-card {
+        position: relative;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        border-radius: 16px 12px 18px 14px;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-align: left;
+        box-shadow: 0 8px 16px var(--shadow-color);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .option-card:nth-child(odd) {
+        transform: translateX(6px);
+      }
+
+      .option-card:hover {
+        transform: translateX(10px);
+        border-color: var(--accent);
+        box-shadow: 0 12px 18px var(--shadow-color);
+      }
+
+      .option-card:active {
+        transform: translateX(7px);
+      }
+
+      .option-index {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+      }
+
+      .option-text {
+        flex: 1;
+        font-size: 0.84rem;
+        color: var(--text-main);
+      }
+
+      .option-tail {
+        font-size: 0.8rem;
+        color: var(--accent-2);
+      }
+
+      .panel-footer {
+        position: relative;
+        z-index: 1;
+        margin: 6px 6px 2px;
+        padding: 6px 8px;
+        border-top: 1px dashed var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        background: linear-gradient(90deg, rgba(82, 135, 185, 0.12), transparent 70%);
+        border-radius: 10px;
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 6px;
+        }
+
+        .folder-shell {
+          padding: 10px 10px 10px 40px;
+        }
+
+        .panel-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .options-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .option-card:nth-child(odd) {
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panels-container">
+      <!-- 面板 1 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder1">
+          <header class="panel-header">
+            <span class="title-meta" id="q1-title">Q1</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder1">
+                <span class="collapse-arrow">▲</span>
+              </button>
+            </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid1"></div>
+          </div>
+          <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
+        </div>
+      </div>
+
+      <!-- 面板 2 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder2">
+          <header class="panel-header">
+            <span class="title-meta" id="q2-title">Q2</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder2">
+                <span class="collapse-arrow">▲</span>
+              </button>
+            </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid2"></div>
+          </div>
+          <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
+        </div>
+      </div>
+
+      <!-- 面板 3 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder3">
+          <header class="panel-header">
+            <span class="title-meta" id="q3-title">Q3</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder3">
+                <span class="collapse-arrow">▲</span>
+              </button>
+            </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid3"></div>
+          </div>
+          <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
+        </div>
+      </div>
+
+      <!-- 面板 4 -->
+      <div class="options-panel" data-theme="light">
+        <div class="folder-shell" id="folder4">
+          <header class="panel-header">
+            <span class="title-meta" id="q4-title">Q4</span>
+            <div class="header-actions">
+              <button type="button" class="ctrl-btn collapse-btn" data-target="folder4">
+                <span class="collapse-arrow">▲</span>
+              </button>
+            </div>
+          </header>
+          <div class="options-body">
+            <div class="options-grid" id="grid4"></div>
+          </div>
+          <footer class="panel-footer">点击选项附加到输入框，可多选累积。</footer>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ---------- 工具函数 ----------
+      function renderOptions(gridId, options) {
+        const grid = document.getElementById(gridId);
+        if (!grid || !Array.isArray(options)) return;
+        grid.innerHTML = '';
+        options.forEach((option, index) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'option-card';
+          card.innerHTML = `
+            <span class="option-index">#${index + 1}</span>
+            <span class="option-text"></span>
+            <span class="option-tail">↗</span>
+          `;
+          card.querySelector('.option-text').textContent = option;
+          card.addEventListener('click', () => handleOption(option));
+          grid.appendChild(card);
+        });
+      }
+
+      function handleOption(text) {
+        const parent$ = window.parent && window.parent.$ ? window.parent.$ : null;
+        const currentInput = parent$ ? parent$('#send_textarea').val() : '';
+        const base = typeof currentInput === 'string' ? currentInput : '';
+        const newInput = base ? `${base}\n${text}` : text;
+        if (typeof triggerSlash === 'function') {
+          triggerSlash(`/setinput ${newInput}`);
+        }
+      }
+
+      // 折叠按钮
+      document.querySelectorAll('.collapse-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const folder = document.getElementById(targetId);
+          if (folder) {
+            folder.classList.toggle('collapsed');
+            localStorage.setItem(`mushang-collapse-${targetId}`, folder.classList.contains('collapsed'));
+          }
+        });
+      });
+
+      document.querySelectorAll('.folder-shell').forEach(folder => {
+        const id = folder.id;
+        const saved = localStorage.getItem(`mushang-collapse-${id}`);
+        if (saved === 'true') folder.classList.add('collapsed');
+      });
+
+      // ---------- 从消息中提取多个 <options> 块 ----------
+      function parseAllOptions(messageText) {
+        const optionsRegex = /<options>([\s\S]*?)<\/options>/g;
+        const blocks = [];
+        let match;
+        while ((match = optionsRegex.exec(messageText)) !== null) {
+          blocks.push(match[1].trim());
+        }
+        return blocks;
+      }
+
+      // 尝试提取标题（# Qx: ... 或简单的 Qx: 开头行）
+      function extractTitles(messageText) {
+        const titles = [];
+        // 匹配每个 <options> 前面最近的一行非空文本作为标题
+        const parts = messageText.split(/(<options>[\s\S]*?<\/options>)/g);
+        let lastText = '';
+        for (const part of parts) {
+          if (part.startsWith('<options>')) {
+            // 上一个文本块的最后一行作为标题
+            const lines = lastText.trim().split('\n');
+            const candidate = lines[lines.length - 1]?.trim();
+            if (candidate && /^#?\s*Q\d/.test(candidate)) {
+              titles.push(candidate.replace(/^#+\s*/, ''));
+            } else {
+              titles.push(null);
+            }
+            lastText = '';
+          } else {
+            lastText += part;
+          }
+        }
+        return titles;
+      }
+
+      // 主逻辑
+      const chat_message = getChatMessages(getCurrentMessageId())[0];
+      const message = chat_message?.message || '';
+      const optionsBlocks = parseAllOptions(message);
+      const titles = extractTitles(message);
+
+      const panelCount = 4;
+      for (let i = 1; i <= panelCount; i++) {
+        const block = optionsBlocks[i - 1] || '';
+        const title = titles[i - 1] || `Q${i}`;
+        document.getElementById(`q${i}-title`).textContent = title;
+        const options = block.split('|').map(s => s.trim()).filter(s => s.length > 0);
+        renderOptions(`grid${i}`, options);
+      }
+    </script>
+  </body>
+</html>
