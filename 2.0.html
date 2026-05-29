@@ -1,0 +1,157 @@
+<!-- 请严格复制以下 HTML 结构并替换中括号 [ ] 内的内容 -->
+<div id="st-action-panel" class="st-panel-container" style="border: 2px solid #555; background-color: #ffffff; padding: 15px; border-radius: 8px; color: #000000 !important; font-family: sans-serif; margin-top: 15px;">
+  <h3 style="margin-top: 0; border-bottom: 2px solid #555; padding-bottom: 5px; color: #000000 !important; font-size: 16px;">🎯 玩家行动决策台</h3>
+
+  <!-- Q1: 行动 (已全部展开) -->
+  <details open style="margin-bottom: 10px; cursor: pointer;">
+    <summary style="font-weight: bold; background: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ccc; list-style: none;">▶ Q1: [AI生成：结合当前场景与【世界书设定的职务/身份关系】，提出一个行动应对问题？]（点击展开/多选）</summary>
+    <div style="padding: 10px; border: 1px solid #ccc; border-top: none; display: flex; flex-direction: column; gap: 8px;">
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q1-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项1]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q1-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项2]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q1-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的行动选项3]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;">
+        <input type="checkbox" class="q1-cb custom-trigger" data-target="q1-custom-input" style="margin: 0; flex-shrink: 0;"> 
+        <span style="color:#000; white-space: nowrap;">✍️ 自定义行动：</span>
+        <input type="text" class="q1-custom-input" placeholder="输入你想采取的其他行动..." style="flex: 1; padding: 4px; border: 1px solid #ccc; color: #000;">
+      </label>
+    </div>
+  </details>
+
+  <!-- Q2: 对话 (已全部展开) -->
+  <details open style="margin-bottom: 10px; cursor: pointer;">
+    <summary style="font-weight: bold; background: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ccc; list-style: none;">▶ Q2: [AI生成：针对NPC言论，并结合【世界书设定的职务/身份关系】，提出一个对话应对问题？]（点击展开/多选）</summary>
+    <div style="padding: 10px; border: 1px solid #ccc; border-top: none; display: flex; flex-direction: column; gap: 8px;">
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q2-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项1]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q2-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项2]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q2-cb" style="margin: 0; flex-shrink: 0;" value="[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]"> <span style="color:#000;">[AI生成: 严格依据【世界书关系/职务】+【交情】+【性趣】生成的对话选项3]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;">
+        <input type="checkbox" class="q2-cb custom-trigger" data-target="q2-custom-input" style="margin: 0; flex-shrink: 0;"> 
+        <span style="color:#000; white-space: nowrap;">💬 自定义对话：</span>
+        <input type="text" class="q2-custom-input" placeholder="输入你想说的话..." style="flex: 1; padding: 4px; border: 1px solid #ccc; color: #000;">
+      </label>
+    </div>
+  </details>
+
+  <!-- Q3: 节奏 (已全部展开) -->
+  <details open style="margin-bottom: 10px; cursor: pointer;">
+    <summary style="font-weight: bold; background: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ccc; list-style: none;">▶ Q3: 剧情长度与演进方式（单选）</summary>
+    <div style="padding: 10px; border: 1px solid #ccc; border-top: none; display: flex; flex-direction: column; gap: 8px;">
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="radio" class="q3-rad" name="[AI生成: 唯一随机数，如1234]" value="生成不少于200字剧情" style="margin: 0; flex-shrink: 0;"> <span style="color:#000;">生成不少于200字剧情</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="radio" class="q3-rad" name="[AI生成: 唯一随机数，与上一行相同]" value="生成不少于600字剧情" style="margin: 0; flex-shrink: 0;"> <span style="color:#000;">生成不少于600字剧情</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="radio" class="q3-rad" name="[AI生成: 唯一随机数，与上一行相同]" value="生成不少于1200字剧情" style="margin: 0; flex-shrink: 0;"> <span style="color:#000;">生成不少于1200字剧情</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;">
+        <input type="radio" class="q3-rad custom-trigger" name="[AI生成: 唯一随机数，与上一行相同]" data-target="q3-custom-input" style="margin: 0; flex-shrink: 0;"> 
+        <span style="color:#000; white-space: nowrap;">生成自定义字数：</span>
+        <input type="number" class="q3-custom-input" placeholder="例如: 2000" style="width: 80px; padding: 4px; border: 1px solid #ccc; color: #000;"> <span style="color:#000;">字剧情</span>
+      </label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;">
+        <input type="radio" class="q3-rad" name="[AI生成: 唯一随机数，与上一行相同]" value="快速推进当前剧情至转场。请根据我上述勾选的行动与对话，结合前后文、世界书、角色关系（交情/性趣）来续写后续剧情直到转场。转场后必须注明过了多少时间，并全量同步状态栏中的时间线。" style="margin: 0; flex-shrink: 0;"> 
+        <span style="color:#000;">快速推进当前剧情至转场（综合所有设定续写，并同步时间）</span>
+      </label>
+    </div>
+  </details>
+
+  <!-- Q4: 调查与休息 (已全部展开) -->
+  <details open style="margin-bottom: 15px; cursor: pointer;">
+    <summary style="font-weight: bold; background: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ccc; list-style: none;">▶ Q4: 发起调查或日常行动（点击展开 / 可多选）</summary>
+    <div style="padding: 10px; border: 1px solid #ccc; border-top: none; display: flex; flex-direction: column; gap: 8px;">
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q4-cb" style="margin: 0; flex-shrink: 0;" value="发起调查: [AI生成: 遍历到的NPC1名称]"> <span style="color:#000;">🔍 发起调查: [AI生成: 遍历到的NPC1名称]</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q4-cb" style="margin: 0; flex-shrink: 0;" value="发起调查: 现场环境与异常"> <span style="color:#000;">🔍 发起调查: 当前现场环境与异常线索</span></label>
+      <hr style="border-top: 1px dashed #ccc; margin: 5px 0;">
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q4-cb" style="margin: 0; flex-shrink: 0;" value="在执行完上述行动后，发起睡觉休息"> <span style="color:#000;">🛏️ 执行完上述选项后：发起睡觉休息</span></label>
+      <label style="display: flex; align-items: center; flex-direction: row; gap: 8px; margin: 0; cursor: pointer;"><input type="checkbox" class="q4-cb" style="margin: 0; flex-shrink: 0;" value="在执行完上述行动后，发起吃饭进食"> <span style="color:#000;">🍲 执行完上述选项后：发起吃饭进食</span></label>
+    </div>
+  </details>
+
+  <button onclick="window.commitSTAction(this)" style="width: 100%; background-color: #d9534f; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s;">点击确认并复制所选选项</button>
+</div>
+
+<script>
+// 关键修复：将函数绑定到 window 全局对象，防止酒馆动态加载时作用域丢失导致找不到函数
+window.commitSTAction = function(btn) {
+  try {
+    const panel = btn.closest('.st-panel-container');
+    const getVals = (cls) => {
+        let vals = [];
+        panel.querySelectorAll(`.${cls}:checked`).forEach(el => {
+            if (el.classList.contains('custom-trigger')) {
+                const targetClass = el.getAttribute('data-target');
+                const customVal = panel.querySelector(`.${targetClass}`).value.trim();
+                if (customVal) vals.push(customVal);
+            } else {
+                vals.push(el.value);
+            }
+        });
+        return vals;
+    };
+    
+    const q1 = getVals('q1-cb'), q2 = getVals('q2-cb'), q4 = getVals('q4-cb');
+    let q3 = "";
+    const q3Node = panel.querySelector('.q3-rad:checked');
+    if (q3Node) {
+        if (q3Node.classList.contains('custom-trigger')) {
+            const num = panel.querySelector('.q3-custom-input').value.trim();
+            if (num) q3 = `生成不少于${num}字剧情`;
+        } else {
+            q3 = q3Node.value;
+        }
+    }
+    
+    let parts = [];
+    if (q1.length) parts.push(`【我的行动】：${q1.join(' ； ')}`);
+    if (q2.length) parts.push(`【我的对话】：${q2.join(' ； ')}`);
+    if (q4.length) parts.push(`【追加指令】：${q4.join(' ； ')}`);
+    if (q3) parts.push(`【系统指令】：${q3}`);
+    
+    if (parts.length === 0) return alert('⚠️ 至少需要勾选或输入一个选项！');
+    const finalStr = parts.join('\n');
+
+    // 1. 优先尝试直接填入酒馆底部的输入框
+    const stTextarea = document.getElementById('send_textarea');
+    if (stTextarea) {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+        if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(stTextarea, finalStr);
+        } else {
+            stTextarea.value = finalStr;
+        }
+        stTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // 2. 强力复制到剪贴板 (作为双重保险)
+    const fallbackCopy = (text) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            btn.innerText = '✅ 选项已填入输入框并复制'; 
+            btn.style.backgroundColor = '#5cb85c';
+        } catch (err) {
+            prompt('自动复制失败，请手动复制以下文本：', text);
+        }
+        document.body.removeChild(textArea);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(finalStr).then(() => {
+            btn.innerText = '✅ 选项已填入输入框并复制'; 
+            btn.style.backgroundColor = '#5cb85c';
+        }).catch(() => {
+            fallbackCopy(finalStr);
+        });
+    } else {
+        fallbackCopy(finalStr);
+    }
+
+  } catch(err) { 
+      alert('处理过程出错: ' + err.message); 
+  }
+};
+</script>
