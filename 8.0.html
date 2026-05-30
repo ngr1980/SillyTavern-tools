@@ -1,0 +1,120 @@
+<style>
+  :root {
+    --paper-bg: #eef4fb; --card-bg: #f7fbff; --text-main: #1b2a38; --text-muted: #5a6a79;
+    --border-color: #c7d6e6; --shadow-color: rgba(20, 38, 58, 0.18); --accent: #4b89c4;
+    --accent-2: #6fb1c7; --line-color: rgba(156, 185, 215, 0.4); --ring-color: rgba(92, 127, 164, 0.55);
+    --spine: rgba(91, 128, 168, 0.16); --staple: #97a6b6; --grid-line: rgba(156, 185, 215, 0.18);
+    --chip-bg: rgba(82, 135, 185, 0.14);
+  }
+  [data-theme='dark'] {
+    --paper-bg: #121b26; --card-bg: #1c2632; --text-main: #c9d4e0; --text-muted: #97a7b8;
+    --border-color: rgba(92, 127, 164, 0.45); --shadow-color: rgba(0, 0, 0, 0.55);
+    --accent: #6aa6e3; --accent-2: #7fc6da; --spine: rgba(96, 135, 175, 0.2);
+    --staple: #5c6d7d; --grid-line: rgba(70, 100, 130, 0.25); --chip-bg: rgba(82, 135, 185, 0.22);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'STSong', serif; background: transparent; color: var(--text-main); line-height: 1.4; }
+  .options-panel { max-width: 760px; margin: 0 auto; border-radius: 18px; box-shadow: 0 16px 36px var(--shadow-color); }
+  .folder-shell { position: relative; padding: 12px 14px 12px 50px; border-radius: 18px; border: 1px solid var(--border-color); background-color: var(--paper-bg); background-image: linear-gradient(transparent 21px, var(--grid-line) 22px), linear-gradient(90deg, transparent 21px, var(--grid-line) 22px); background-size: 22px 22px; transition: all 0.3s ease; }
+  .folder-shell::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 40px; background: linear-gradient(180deg, var(--spine), transparent 60%); border-right: 1px solid var(--border-color); }
+  .folder-shell::after { content: ''; position: absolute; left: 16px; top: 28px; width: 10px; height: 10px; border: 2px solid var(--staple); border-radius: 50%; box-shadow: 0 90px 0 0 var(--staple), 0 180px 0 0 var(--staple); opacity: 0.8; }
+  .panel-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-bottom: 6px; border-bottom: 1px dashed var(--border-color); position: relative; z-index: 1; }
+  .header-spacer { flex: 1; }
+  .header-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .ctrl-btn { width: 30px; height: 30px; border: 1px solid var(--border-color); background: var(--card-bg); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 0.9rem; transition: all 0.2s ease; }
+  .ctrl-btn:hover { transform: scale(1.05); background: var(--chip-bg); }
+  .collapse-arrow { transition: transform 0.3s ease; font-size: 0.7rem; }
+  .folder-shell.collapsed .collapse-arrow { transform: rotate(180deg); }
+  .options-body { position: relative; z-index: 1; padding: 10px 6px 2px; max-height: 1200px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease; }
+  .folder-shell.collapsed .options-body { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; }
+  .options-grid { display: grid; grid-template-columns: 1.25fr 0.9fr; gap: 8px; }
+  .option-card { position: relative; border: 1px solid var(--border-color); background: var(--card-bg); border-radius: 16px 12px 18px 14px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; text-align: left; box-shadow: 0 8px 16px var(--shadow-color); transition: all 0.2s ease; }
+  .option-card:nth-child(odd) { transform: translateX(6px); }
+  .option-card:hover { transform: translateX(10px); border-color: var(--accent); box-shadow: 0 12px 18px var(--shadow-color); }
+  .option-index { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .option-text { flex: 1; font-size: 0.84rem; color: var(--text-main); }
+  .option-tail { font-size: 0.8rem; color: var(--accent-2); }
+  .empty-state { text-align: center; padding: 24px; color: var(--text-muted); background: rgba(82, 135, 185, 0.12); border-radius: 12px; border: 1px dashed rgba(82, 135, 185, 0.4); }
+  @media (max-width: 640px) { .folder-shell { padding: 10px 10px 10px 40px; } .options-grid { grid-template-columns: 1fr; } .option-card:nth-child(odd) { transform: translateX(0); } }
+</style>
+
+<div class="options-panel" data-theme="light">
+  <div class="folder-shell">
+    <header class="panel-header">
+      <div class="header-spacer"></div>
+      <div class="header-actions">
+        <button type="button" class="ctrl-btn theme-btn">🌙</button>
+        <button type="button" class="ctrl-btn collapse-btn"><span class="collapse-arrow">▲</span></button>
+      </div>
+    </header>
+    <div class="options-body">
+      <div class="empty-state">读取中…</div>
+      <div class="options-grid" hidden></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // 1. 获取并渲染主题与折叠
+    const panel = document.querySelector('.options-panel');
+    const folder = document.querySelector('.folder-shell');
+    const themeBtn = document.querySelector('.theme-btn');
+    
+    function applyTheme(t) {
+        panel.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+        themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+    }
+    themeBtn.addEventListener('click', () => {
+        const next = panel.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('mushang-theme', next);
+        applyTheme(next);
+    });
+    applyTheme(localStorage.getItem('mushang-theme'));
+    document.querySelector('.collapse-btn').addEventListener('click', () => folder.classList.toggle('collapsed'));
+
+    // 2. 精准提取同一沙盒内的数据 (完美解决多开和丢失问题)
+    const dataDiv = document.getElementById('st-opt-data');
+    const optionsString = dataDiv ? dataDiv.textContent.trim() : '';
+    
+    // 3. 点击追加逻辑 (适配沙盒/iframe跨域通信)
+    function handleOption(text) {
+      const parentWindow = window.parent || window;
+      if (typeof parentWindow.triggerSlash === 'function') {
+        parentWindow.triggerSlash(`/setinput ${text}`);
+      } else {
+        const parent$ = parentWindow.$ || window.$;
+        if (parent$) {
+          const ta = parent$('#send_textarea');
+          if (ta.length) {
+            const base = ta.val();
+            ta.val(base ? `${base}\n${text}` : text).trigger('input');
+          }
+        }
+      }
+    }
+
+    // 4. 生成按钮 UI
+    const grid = document.querySelector('.options-grid');
+    const empty = document.querySelector('.empty-state');
+    const options = optionsString ? optionsString.split('|').map(i => i.trim()).filter(i => i.length > 0) : [];
+    
+    if (options.length === 0) {
+      empty.textContent = '未检测到选项内容，请检查正则传参';
+      return;
+    }
+    
+    grid.innerHTML = '';
+    options.forEach((opt, idx) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'option-card';
+      card.innerHTML = `<span class="option-index">#${idx + 1}</span><span class="option-text">${opt}</span><span class="option-tail">↗</span>`;
+      card.addEventListener('click', () => handleOption(opt));
+      grid.appendChild(card);
+    });
+    
+    empty.hidden = true;
+    grid.hidden = false;
+  })();
+</script>
